@@ -12,15 +12,15 @@ folder = "mod/"  # change this to the desired folder (subfolder of /Evaluation/)
 
 
 def get_metrics_per_episode():
-    results_default_0 = pd.read_csv(folder + "default0" + file_suffix)
-    results_default_1 = pd.read_csv(folder + "default1" + file_suffix)
-    results_default_2 = pd.read_csv(folder + "default2" + file_suffix)
-    results_dqn = pd.read_csv(folder + "ARA_DIRL_eval" + file_suffix)
-    results_ppo = pd.read_csv(folder + "ppo_eval" + file_suffix)
-    results_rnd = pd.read_csv(folder + "random" + file_suffix)
-    results_custom = pd.read_csv(folder + "custom" + file_suffix)
-    return results_default_0, results_default_1, results_default_2, results_dqn, results_ppo, results_rnd, results_custom
-
+    #    results_default_0 = pd.read_csv(folder + "default0" + file_suffix)
+    #    results_default_1 = pd.read_csv(folder + "default1" + file_suffix)
+    #    results_default_2 = pd.read_csv(folder + "default2" + file_suffix)
+        results_dqn = pd.read_csv(folder + "ARA_DIRL_eval" + file_suffix)
+        results_ppo = pd.read_csv(folder + "ppo_eval" + file_suffix)
+    #    results_rnd = pd.read_csv(folder + "random" + file_suffix)
+    #    results_custom = pd.read_csv(folder + "custom" + file_suffix)
+    #    return results_default_0, results_default_1, results_default_2, results_dqn, results_ppo, results_rnd, results_custom
+    return results_dqn, results_ppo
 
 def get_statistical_test_results():
     """
@@ -29,14 +29,15 @@ def get_statistical_test_results():
     Each sample variable has two parts, one is the sample name (results_default_0) and the other
     is the column which should be analyzed (total_cost)
     """
-    results_default_0, results_default_1, results_default_2, results_dqn, \
-        results_ppo, results_rnd, results_custom, results_custom = get_metrics_per_episode()
+    #results_default_0, results_default_1, results_default_2, results_dqn, \
+            #    results_ppo, results_rnd, results_custom, results_custom = get_metrics_per_episode()
+    results_dqn, results_ppo = get_metrics_per_episode()
 
     # Potential values to inspect:
     # total_cost, wip_cost, fgi_cost, lateness_cost, amount_of_shipped_orders, bottleneck_utilization, \
     # late_orders, early_orders, sum_of_lateness, sum_of_tardiness, average_flow_time
     base_sample = results_ppo.total_cost
-    sample_to_test = results_custom.total_cost
+    sample_to_test = results_dqn.total_cost
 
     # Value to test p values against (Signifikanzniveau)
     alpha = 0.05
@@ -88,9 +89,11 @@ def get_average_metrics_per_episode():
 
     results_default_0, results_default_1, results_default_2, results_dqn, results_ppo, results_rnd, results_custom \
         = get_metrics_per_episode()
-    list_of_samples = [results_default_0, results_default_1, results_default_2, results_rnd, results_dqn,
-                       results_ppo, results_custom]
-    sample_names = ["d0","d1","d2","rnd","dqn","ppo","custom"]
+    #list_of_samples = [results_default_0, results_default_1, results_default_2, results_rnd, results_dqn,
+            #                   results_ppo, results_custom]
+    #sample_names = ["d0","d1","d2","rnd","dqn","ppo","custom"]
+    list_of_samples = [results_dqn,results_ppo]
+    sample_names=["dqn","ppo"]
 
     for index, sample in enumerate(list_of_samples):
         # Service level = percentage of orders delivered on time

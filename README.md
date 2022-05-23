@@ -1,6 +1,6 @@
 ### **Smart capacity planning: A machine learning approach**
 
-**Project overview**\
+**Project overview**
 
 This is a modification of the reinforcement learning environment by Sebastian Windmüller. The environment was modified to make use of positive reinforcement. The original reward function only takes costs into account, but the new reward function also takes revenues from finished products into account.
 
