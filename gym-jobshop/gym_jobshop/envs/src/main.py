@@ -1,6 +1,5 @@
 # Own module imports
-from gym_jobshop.envs.src import global_settings, environment, order_generation, debugging, order_processing, \
-    order_release, order_movement, performance_measurement, class_Machine
+from gym_jobshop.envs.src import global_settings, environment, order_generation, debugging, order_processing, order_release, order_movement, performance_measurement, class_Machine
 
 # Python native module (stdlib) imports
 import time, random
@@ -20,12 +19,17 @@ def setup_environment(number_of_machines):
     """
     if number_of_machines == 3:
         environment.machine_A = class_Machine.Machine(
-            "Machine A", 30, 130, global_settings.processingtime_machine_A_job_shop)  # default 80
+            "Machine A", 30, 130,
+            global_settings.processingtime_machine_A_job_shop)  # default 80
         environment.machine_B = class_Machine.Machine(
-            "Machine B", 30, 130, global_settings.processingtime_machine_B_job_shop) # default 77.5
+            "Machine B", 30, 130,
+            global_settings.processingtime_machine_B_job_shop)  # default 77.5
         environment.machine_C = class_Machine.Machine(
-            "Machine C", 65, 125, global_settings.processingtime_machine_C_job_shop)  # default 95
-        environment.list_of_all_machines = [environment.machine_A, environment.machine_B, environment.machine_C]
+            "Machine C", 65, 125,
+            global_settings.processingtime_machine_C_job_shop)  # default 95
+        environment.list_of_all_machines = [
+            environment.machine_A, environment.machine_B, environment.machine_C
+        ]
         # Generate WIP (work in process) inventories
         # each WIP inventory is associated with one machine (and each machine with one inventory)
         # when an order arrives at a machine, the order first gets placed inside the WIP inventory
@@ -33,15 +37,21 @@ def setup_environment(number_of_machines):
         environment.wip_A = []
         environment.wip_B = []
         environment.wip_C = []
-        environment.list_of_all_wip_elements = [environment.wip_A, environment.wip_B, environment.wip_C]
-        environment.list_of_inventories = [environment.wip_A, environment.wip_B, environment.wip_C,
-                                           environment.finished_goods_inventory, environment.shipped_orders,
-                                           environment.order_pool]
+        environment.list_of_all_wip_elements = [
+            environment.wip_A, environment.wip_B, environment.wip_C
+        ]
+        environment.list_of_inventories = [
+            environment.wip_A, environment.wip_B, environment.wip_C,
+            environment.finished_goods_inventory, environment.shipped_orders,
+            environment.order_pool
+        ]
         environment.bottleneck_machine = environment.machine_C
 
     elif number_of_machines == 1:
         environment.machine_A = class_Machine.Machine(
-            "Machine A", 30, 130, global_settings.processingtime_machine_A_job_shop_1_machine)  # 106.1999115 gives roughly 90% utilization
+            "Machine A", 30, 130,
+            global_settings.processingtime_machine_A_job_shop_1_machine
+        )  # 106.1999115 gives roughly 90% utilization
         environment.list_of_all_machines = [environment.machine_A]
         # Generate WIP (work in process) inventories
         # each WIP inventory is associated with one machine (and each machine with one inventory)
@@ -49,12 +59,14 @@ def setup_environment(number_of_machines):
         # if the machine is not processing an order, it pulls one order from the WIP according to certain rules
         environment.wip_A = []
         environment.list_of_all_wip_elements = [environment.wip_A]
-        environment.list_of_inventories = [environment.wip_A, environment.finished_goods_inventory,
-                                           environment.shipped_orders, environment.order_pool]
+        environment.list_of_inventories = [
+            environment.wip_A, environment.finished_goods_inventory,
+            environment.shipped_orders, environment.order_pool
+        ]
         environment.bottleneck_machine = environment.machine_A
 
     else:
-        raise ValueError("Wrong shop_type",global_settings.shop_type)
+        raise ValueError("Wrong shop_type", global_settings.shop_type)
 
     return
 
@@ -105,8 +117,11 @@ def get_current_environment_state():
     """
     state = []
     for product_type_element in [1, 2, 3, 4, 5, 6]:
-        state.append(environment.get_order_amounts_by_product_type(product_type_element))
-    debugging.verify_observation_state(state) # sanity check for the observation state
+        state.append(
+            environment.get_order_amounts_by_product_type(
+                product_type_element))
+    debugging.verify_observation_state(
+        state)  # sanity check for the observation state
     return state
 
 
@@ -175,8 +190,12 @@ def step_one_period_ahead():
     The environment doesn't reset itself, even if done is returned as True.
     """
     # Reset temporary lists for shipped orders
-    global_settings.shipped_orders_by_prodtype_and_lateness = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
-                                                               [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+    global_settings.shipped_orders_by_prodtype_and_lateness = [[0, 0, 0, 0, 0],
+                                                               [0, 0, 0, 0, 0],
+                                                               [0, 0, 0, 0, 0],
+                                                               [0, 0, 0, 0, 0],
+                                                               [0, 0, 0, 0, 0],
+                                                               [0, 0, 0, 0, 0]]
     global_settings.temp_amount_of_shipped_orders = 0
     # Release orders
     order_release.release_orders()
@@ -191,7 +210,9 @@ def step_one_period_ahead():
     reward, cost_rundown = get_results_from_this_period()
     environment_state = get_current_environment_state()
     # Check if current episode is done (default: episodes are done after 8000 periods)
-    if global_settings.current_time >= (global_settings.number_of_periods * global_settings.duration_of_one_period):
+    if global_settings.current_time >= (
+            global_settings.number_of_periods *
+            global_settings.duration_of_one_period):
         done = True  # Note that your algorithm should call env.reset() when done is returned as True
         print(bottleneck())
         performance_measurement.evaluate_episode()
@@ -205,45 +226,50 @@ def get_results_from_this_period():
     """
     Get the costs of the current period (it has actually passed already, this functions gets called at the end)
     which will be used as the Gym environment's reward.
-    Reinforcement Learning agents try to maximize reward, so we cannot return the actual cost as reward.
-    Otherwise, the agents would try to maximize the cost, since internally the cost is a value greater than zero.
-    Therefore returned costs are multiplied by -1 to ensure that the returned value is negative.
+    Reinforcement Learning agents try to maximize reward, so we try to maximise cost - revenue
     :return:
-    * total cost: (total cost of the period that just passed) * -1
+    * total cost: (total cost of the period that just passed)
     * cost_rundown: a cost rundown with more details (list of the costs per production step)
     """
     cost = global_settings.temp_cost_this_period
-    cost_rundown = ["WIP: ", global_settings.temp_wip_cost, "FGI: ", global_settings.temp_fgi_cost,
-                    "Late:", global_settings.temp_lateness_cost, "Overtime: ", global_settings.temp_overtime_cost]
+    cost_rundown = [
+        "WIP: ", global_settings.temp_wip_cost, "FGI: ",
+        global_settings.temp_fgi_cost, "Late:",
+        global_settings.temp_lateness_cost, "Overtime: ",
+        global_settings.temp_overtime_cost, "Revenue:",
+        global_settings.temp_revenue
+    ]
 
-    if cost < 0:  # sanity check stops the run if cost is negative
-        raise ValueError("get_results_from_this_period() received negative costs where they should be positive")
-    return cost * -1, cost_rundown
+    return cost, cost_rundown
 
 
 def get_info():
     """
     Return some useful information from the simulation results.
     """
-    return (
-            "Iteration " + str(global_settings.random_seed) + " finished. Orders shipped: " + str(len(
-                environment.shipped_orders)) + " | WIP cost: " + str(
-                global_settings.sum_shopfloor_cost) + " | FGI cost: " + str(
-                global_settings.sum_fgi_cost) + " | lateness cost: " + str(global_settings.sum_lateness_cost) +
-            " | overtime cost: " + str(global_settings.sum_overtime_cost) +
-            " | total cost: " + str(global_settings.total_cost) +
-            " | Bottleneck utilization: " + str(global_settings.bottleneck_utilization_per_step /
-                                                (
-                                                        global_settings.duration_of_one_period *
-                                                        global_settings.number_of_periods))
-    )
+    return ("Iteration " + str(global_settings.random_seed) +
+            " finished. Orders shipped: " +
+            str(len(environment.shipped_orders)) + " | WIP cost: " +
+            str(global_settings.sum_shopfloor_cost) + " | FGI cost: " +
+            str(global_settings.sum_fgi_cost) + " | lateness cost: " +
+            str(global_settings.sum_lateness_cost) + " | overtime cost: " +
+            str(global_settings.sum_overtime_cost) + " | revenue: " +
+            str(global_settings.sum_revenue) + " | total cost: " +
+            str(global_settings.total_cost) + " | Bottleneck utilization: " +
+            str(global_settings.bottleneck_utilization_per_step /
+                (global_settings.duration_of_one_period *
+                 global_settings.number_of_periods)))
 
 
 def bottleneck():  # used for debugging. todo: delete for final release
-    return ("Bottleneck utilization: ", round(
-            global_settings.bottleneck_utilization_per_step / global_settings.maximum_simulation_duration,2),
-            "| Overtime:",global_settings.processing_times_multiplier,
-            )
+    return (
+        "Bottleneck utilization: ",
+        round(
+            global_settings.bottleneck_utilization_per_step /
+            global_settings.maximum_simulation_duration, 2),
+        "| Overtime:",
+        global_settings.processing_times_multiplier,
+    )
 
 
 def get_current_time():
@@ -269,7 +295,8 @@ if __name__ == '__main__':
     while iterations_remaining > 0:
         reset()
         reward = 0
-        print("Starting simulation. Iteration #" + str(global_settings.random_seed))
+        print("Starting simulation. Iteration #" +
+              str(global_settings.random_seed))
         # START SIMULATION MAIN LOOP
         for period in range(global_settings.number_of_periods):
             """
@@ -287,20 +314,25 @@ if __name__ == '__main__':
         # END MAIN LOOP
 
         # ANALYSIS
-        print("Iteration " + str(global_settings.random_seed) + " finished. Orders shipped: " + str(len(
-            environment.shipped_orders)) +
-              " | WIP cost: " + str(global_settings.sum_shopfloor_cost) +
-              " | FGI cost: " + str(global_settings.sum_fgi_cost) +
-              " | lateness cost: " + str(global_settings.sum_lateness_cost) +
-              " | overtime cost: " + str(global_settings.sum_overtime_cost) +
-              " | total cost: " + str(global_settings.total_cost))
+        print("Iteration " + str(global_settings.random_seed) +
+              " finished. Orders shipped: " +
+              str(len(environment.shipped_orders)) + " | WIP cost: " +
+              str(global_settings.sum_shopfloor_cost) + " | FGI cost: " +
+              str(global_settings.sum_fgi_cost) + " | lateness cost: " +
+              str(global_settings.sum_lateness_cost) + " | overtime cost: " +
+              str(global_settings.sum_overtime_cost) + " | revenue: "
+              str(global_settings.sum_revenue) + " | total cost: " +
+              str(global_settings.total_cost))
         print("Bottleneck utilization: " +
               str(global_settings.bottleneck_utilization_per_step /
-                  (global_settings.duration_of_one_period * global_settings.number_of_periods)))
+                  (global_settings.duration_of_one_period *
+                   global_settings.number_of_periods)))
 
         global_settings.random_seed += 1
         iterations_remaining -= 1
 
     print(str(global_settings.repetitions) + " iterations done. ")
-    print("Simulation ran for " + str(round(time.time() - simulation_start_time, 4)) + ' seconds and '
-          + str(global_settings.number_of_periods) + " periods per iteration.")
+    print("Simulation ran for " +
+          str(round(time.time() - simulation_start_time, 4)) +
+          ' seconds and ' + str(global_settings.number_of_periods) +
+          " periods per iteration.")

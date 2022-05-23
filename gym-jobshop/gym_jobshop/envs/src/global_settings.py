@@ -25,7 +25,6 @@ overtime_setup = 2
 # cost_for_action_1 = 32
 # cost_for_action_2 = 64
 
-
 demand_distribution = "exponential"  # must be "exponential" or "uniform". Used in
 # environment.py/set_next_order_arrival_time()
 
@@ -49,7 +48,6 @@ processingtime_machine_A_job_shop = 80  # default 80
 processingtime_machine_B_job_shop = 77.5  # default 77.5
 processingtime_machine_C_job_shop = 110  # default 110
 # The uniform processing times are located at main.py -> setup_environment()
-
 
 order_release_policy = "bil"  # must be "periodic" (=immediate release) or "bil" (= backward infinite loading)
 # When using BIL, don't forget to set planned_release_date_multiplier
@@ -90,6 +88,8 @@ cost_per_item_in_fgi = 4  # Cost per period for storing one order in finished go
 cost_per_late_item = 16  # Cost per period for exceeding an order's due date. Default: 16
 overtime_base_cost = 8  # Overtime cost per hour. Gets multiplied depending on chosen overtime
 
+revenues = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 22}
+
 #########################################################
 ############### Less important settings: ################
 #########################################################
@@ -122,6 +122,7 @@ sum_shopfloor_cost = 0
 sum_fgi_cost = 0
 sum_lateness_cost = 0
 sum_overtime_cost = 0
+sum_revenue = 0
 temp_sum_of_late_orders_this_period = 0
 temp_cost_this_period = 0
 temp_overtime_cost = 0
@@ -129,11 +130,13 @@ temp_wip_cost = 0
 temp_lateness_cost = 0
 temp_fgi_cost = 0
 temp_amount_of_shipped_orders = 0
+temp_revenue = 0
 bottleneck_utilization_per_step = 0  # Integer, which gets increased by up to 1 per step inside
 # performance_measurement -> measure_bottleneck_utilization()
 past_rewards = []
-shipped_orders_by_prodtype_and_lateness = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
-                                           [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+shipped_orders_by_prodtype_and_lateness = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+                                           [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+                                           [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
 
 
 def reset_global_settings():

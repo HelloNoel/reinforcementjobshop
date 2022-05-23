@@ -20,7 +20,7 @@ order_pool = []
 #     THIS SHOP TYPE IS NOT SUPPORTED!
 #     It comes from a time where the simulation was not wrapped inside a Gym environment.
 #     Thus it might still work if you run it outside of the gym environment (by using main.py).
-#     It remains here to allow for further extensions of the simulation,
+#     Itremains here to allow for further extensions of the simulation,
 #     e.g. if you want to support a flow shop inside the Gym environment.
 #     """
 #     machine_A = class_Machine.Machine("Machine A", 30, 130, 80)
@@ -110,20 +110,20 @@ def set_next_order_arrival_time():
     """
     if global_settings.demand_distribution == "uniform":
         # Update the time_of_next_order_arrival to a random time within the interval specified in global_settings
-        global_settings.time_of_next_order_arrival = \
-            global_settings.current_time + round(random.uniform(
-                global_settings.next_order_arrival_lower_bound,
-                global_settings.next_order_arrival_upper_bound))
+        global_settings.time_of_next_order_arrival = global_settings.current_time + round(
+            random.uniform(global_settings.next_order_arrival_lower_bound,
+                           global_settings.next_order_arrival_upper_bound))
     elif global_settings.demand_distribution == "exponential":
         # Update the time_of_next_order_arrival to a random time from an exponential distribution
-        random_exponential_number = \
-            get_random_exponential_number(global_settings.next_order_arrival_exponential_rate_parameter)
+        random_exponential_number = get_random_exponential_number(
+            global_settings.next_order_arrival_exponential_rate_parameter)
         if random_exponential_number == 0:
             random_exponential_number = 1
         global_settings.time_of_next_order_arrival = global_settings.current_time + random_exponential_number
     else:
-        raise ValueError("global_settings.demand_distribution invalid value assigned. "
-                         "Must be 'exponential' or 'uniform'")
+        raise ValueError(
+            "global_settings.demand_distribution invalid value assigned. "
+            "Must be 'exponential' or 'uniform'")
     return
 
 
@@ -134,16 +134,16 @@ def set_new_random_processing_time(machine_object):
     :return: nothing
     """
     if global_settings.processing_time_distribution == "uniform":
-        machine_object.processing_time = \
-            round(random.uniform(
-                machine_object.uniform_processing_time_lower_bound,
-                machine_object.uniform_processing_time_upper_bound))
+        machine_object.processing_time = round(
+            random.uniform(machine_object.uniform_processing_time_lower_bound,
+                           machine_object.uniform_processing_time_upper_bound))
     elif global_settings.processing_time_distribution == "exponential":
-        machine_object.processing_time = \
-            get_random_exponential_number(machine_object.exponential_processing_time)
+        machine_object.processing_time = get_random_exponential_number(
+            machine_object.exponential_processing_time)
     else:
-        raise ValueError("global_settings.processing_time_distribution invalid value assigned. "
-                         "Must be 'exponential' or 'uniform'")
+        raise ValueError(
+            "global_settings.processing_time_distribution invalid value assigned. "
+            "Must be 'exponential' or 'uniform'")
     return
 
 
@@ -155,7 +155,9 @@ def get_order_amounts_by_product_type(product_type):
     :return: returns an array with six elements, each indicating the order amounts at the production steps
     """
     if product_type not in [1, 2, 3, 4, 5, 6]:
-        raise ValueError("Wrong product type in environment.py -> get_order_amounts_by_product_type")
+        raise ValueError(
+            "Wrong product type in environment.py -> get_order_amounts_by_product_type"
+        )
 
     # Calculate amount of orders inside the order pool
     amount_in_order_pool = get_order_pool_levels_by_due_date(product_type)
@@ -252,7 +254,8 @@ def get_order_pool_levels_by_due_date(product_type):
 
     for order_element in order_pool:
         if order_element.product_type == product_type:
-            due_in = (order_element.due_date - global_settings.current_time) / global_settings.duration_of_one_period
+            due_in = (order_element.due_date - global_settings.current_time
+                      ) / global_settings.duration_of_one_period
             if due_in <= 1:
                 due_in_1_period += 1
             if 1 < due_in <= 2:
@@ -274,9 +277,10 @@ def get_order_pool_levels_by_due_date(product_type):
             if due_in > 9:
                 due_in_10_periods += 1
 
-    order_pool_levels_by_due_date.extend((due_in_1_period, due_in_2_periods,
-                                          due_in_3_periods, due_in_4_periods, due_in_5_periods, due_in_6_periods,
-                                          due_in_7_periods, due_in_8_periods, due_in_9_periods, due_in_10_periods))
+    order_pool_levels_by_due_date.extend(
+        (due_in_1_period, due_in_2_periods, due_in_3_periods, due_in_4_periods,
+         due_in_5_periods, due_in_6_periods, due_in_7_periods,
+         due_in_8_periods, due_in_9_periods, due_in_10_periods))
     return order_pool_levels_by_due_date
 
 
@@ -295,12 +299,13 @@ def get_fgi_levels_by_earliness(product_type):
 
     for order_element in finished_goods_inventory:
         if order_element.product_type == product_type:
-            early_by = (order_element.due_date - global_settings.current_time) / \
-                       global_settings.duration_of_one_period
+            early_by = (order_element.due_date - global_settings.current_time
+                        ) / global_settings.duration_of_one_period
             if early_by <= 1:
                 early_by_1_period += 1
                 if early_by < 0:  # sanity check, early_by should never be below 0
-                    raise ValueError("Step", global_settings.current_time, "an order is due but still in FGI")
+                    raise ValueError("Step", global_settings.current_time,
+                                     "an order is due but still in FGI")
             if 1 < early_by <= 2:
                 early_by_2_periods += 1
             if 2 < early_by <= 3:
@@ -308,8 +313,9 @@ def get_fgi_levels_by_earliness(product_type):
             if early_by > 3:
                 early_by_4_or_more_periods += 1
 
-    fgi_levels_by_earliness.extend((early_by_1_period, early_by_2_periods,
-                                    early_by_3_periods, early_by_4_or_more_periods))
+    fgi_levels_by_earliness.extend(
+        (early_by_1_period, early_by_2_periods, early_by_3_periods,
+         early_by_4_or_more_periods))
 
     return fgi_levels_by_earliness
 
@@ -321,5 +327,6 @@ def get_shipped_levels_by_lateness(product_type):
     :return: a list containing five elements, each indicating the
     amount of orders which are either punctual or late by 1, 2, 3 and 4 or more periods
     """
-    shipped_levels_by_lateness = global_settings.shipped_orders_by_prodtype_and_lateness[int(product_type) - 1]
+    shipped_levels_by_lateness = global_settings.shipped_orders_by_prodtype_and_lateness[
+        int(product_type) - 1]
     return shipped_levels_by_lateness

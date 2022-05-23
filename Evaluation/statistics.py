@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # https://www.socscistatistics.com/tests/signedranks/default2.aspx
 machine_prefix = "_3"  # change this to "_1" to evaluate files for 1 machine
 file_suffix = machine_prefix + "_env_metrics_per_episode.csv"
-folder = "bil2-A/"  # change this to the desired folder (subfolder of /Evaluation/), e.g. "bil3-B/"
+folder = "mod/"  # change this to the desired folder (subfolder of /Evaluation/), e.g. "bil3-B/"
 
 
 def get_metrics_per_episode():

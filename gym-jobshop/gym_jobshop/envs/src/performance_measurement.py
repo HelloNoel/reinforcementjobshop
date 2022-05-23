@@ -10,31 +10,38 @@ def get_cost_from_current_period():
     temp_overtime_cost = 0
     temp_fgi_cost = 0
     temp_late_cost = 0
+    temp_revenue = 0
     total_cost_this_period = 0
     # Measure cost for shopfloor and overtime (machines + WIP inventories):
     for wip in environment.list_of_all_wip_elements:
         temp_wip_cost += len(wip) * global_settings.cost_per_item_in_shopfloor
     for machine in environment.list_of_all_machines:
         if len(machine.orders_inside_the_machine) > 0:
-            temp_wip_cost += len(machine.orders_inside_the_machine) * \
-                             global_settings.cost_per_item_in_shopfloor
-    # Measure overtime cost on bottleneck machine
+            temp_wip_cost += len(machine.orders_inside_the_machine
+                                 ) * global_settings.cost_per_item_in_shopfloor
+    for order in environment.shipped_orders:
+        temp_revenue += global_settings.revenues[order.product_type]
+    # Measure overtime cget_order_statisticser_statistics on bottleneck machine
     # only if overtime is active in this period
     if global_settings.processing_times_multiplier == global_settings.overtime_multiplier_2:
         temp_overtime_cost += global_settings.cost_for_action_1
     if global_settings.processing_times_multiplier == global_settings.overtime_multiplier_3:
         temp_overtime_cost += global_settings.cost_for_action_2
     # Measure cost for finished goods inventory:
-    temp_fgi_cost = len(environment.finished_goods_inventory) * global_settings.cost_per_item_in_fgi
+    temp_fgi_cost = len(environment.finished_goods_inventory
+                        ) * global_settings.cost_per_item_in_fgi
     # Measure cost for late goods (= backorder cost):
     temp_late_cost = global_settings.temp_sum_of_late_orders_this_period * global_settings.cost_per_late_item
 
     # Measure total cost for this period
-    total_cost_this_period = temp_wip_cost + temp_overtime_cost + temp_fgi_cost + temp_late_cost
+    total_cost_this_period = temp_wip_cost + temp_overtime_cost + temp_fgi_cost + temp_late_cost - temp_revenue
 
     global_settings.temp_sum_of_late_orders_this_period = 0  # reset the count of late orders until the next period's end
 
-    return [total_cost_this_period, temp_wip_cost, temp_overtime_cost, temp_fgi_cost, temp_late_cost]
+    return [
+        total_cost_this_period, temp_wip_cost, temp_overtime_cost,
+        temp_fgi_cost, temp_late_cost, temp_revenue
+    ]
 
 
 def update_total_cost():
@@ -68,6 +75,10 @@ def update_total_cost():
     global_settings.sum_overtime_cost += all_costs_from_this_period[2]
     global_settings.temp_overtime_cost = all_costs_from_this_period[2]
 
+    # Update revenues
+    global_settings.sum_revenue += all_costs_from_this_period[5]
+    global_settings.temp_revenue = all_costs_from_this_period[5]
+
     # Update total cost:
     global_settings.total_cost += all_costs_from_this_period[0]
     global_settings.temp_cost_this_period = all_costs_from_this_period[0]
@@ -80,6 +91,7 @@ def reset_all_costs():
     global_settings.sum_fgi_cost = 0
     global_settings.sum_lateness_cost = 0
     global_settings.sum_overtime_cost = 0
+    global_settings.sum_revenue = 0
     return
 
 
@@ -133,12 +145,17 @@ def evaluate_episode():
     overtime_cost = global_settings.sum_overtime_cost
     amount_of_shipped_orders = len(environment.shipped_orders)
     bottleneck_utilization = round(
-            global_settings.bottleneck_utilization_per_step / global_settings.maximum_simulation_duration,2)
+        global_settings.bottleneck_utilization_per_step /
+        global_settings.maximum_simulation_duration, 2)
 
-    late_orders, early_orders, sum_of_lateness, sum_of_earlyness, sum_of_flow_times = get_order_statistics()
-    average_flow_time = round(sum_of_flow_times / len(environment.shipped_orders),2)
+    late_orders, early_orders, sum_of_lateness, sum_of_earlyness, sum_of_flow_times = get_order_statistics(
+    )
+    average_flow_time = round(
+        sum_of_flow_times / len(environment.shipped_orders), 2)
 
-    results = [total_cost, wip_cost, fgi_cost, lateness_cost, overtime_cost, amount_of_shipped_orders,
-               bottleneck_utilization, late_orders, early_orders, sum_of_lateness, sum_of_earlyness,
-               average_flow_time]
+    results = [
+        total_cost, wip_cost, fgi_cost, lateness_cost, overtime_cost,
+        amount_of_shipped_orders, bottleneck_utilization, late_orders,
+        early_orders, sum_of_lateness, sum_of_earlyness, average_flow_time
+    ]
     return results

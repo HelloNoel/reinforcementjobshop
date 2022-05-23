@@ -1,6 +1,9 @@
 ### **Smart capacity planning: A machine learning approach**
 
 **Project overview**\
+
+This is a modification of the reinforcement learning environment by Sebastian Windmüller. The environment was modified to make use of positive reinforcement. The original reward function only takes costs into account, but the new reward function also takes revenues from finished products into account.
+
 There are two components:
 1. A custom environment for http://gym.openai.com/ containing the simulation of a job shop production system. 
    This environment allows a reinforcement learning (RL) agent to interact with the production system through a structured interface.
