@@ -320,7 +320,7 @@ if __name__ == '__main__':
               str(global_settings.sum_shopfloor_cost) + " | FGI cost: " +
               str(global_settings.sum_fgi_cost) + " | lateness cost: " +
               str(global_settings.sum_lateness_cost) + " | overtime cost: " +
-              str(global_settings.sum_overtime_cost) + " | revenue: "
+              str(global_settings.sum_overtime_cost) + " | revenue: " +
               str(global_settings.sum_revenue) + " | total cost: " +
               str(global_settings.total_cost))
         print("Bottleneck utilization: " +
