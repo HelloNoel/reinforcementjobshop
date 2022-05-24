@@ -88,7 +88,7 @@ cost_per_item_in_fgi = 4  # Cost per period for storing one order in finished go
 cost_per_late_item = 16  # Cost per period for exceeding an order's due date. Default: 16
 overtime_base_cost = 8  # Overtime cost per hour. Gets multiplied depending on chosen overtime
 
-revenues = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 22}
+revenues = {1: 100, 2: 102, 3: 104, 4: 106, 5: 108, 6: 110, 7: 112}
 
 #########################################################
 ############### Less important settings: ################
