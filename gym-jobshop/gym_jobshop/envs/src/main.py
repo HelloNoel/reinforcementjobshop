@@ -214,7 +214,7 @@ def step_one_period_ahead():
             global_settings.number_of_periods *
             global_settings.duration_of_one_period):
         done = True  # Note that your algorithm should call env.reset() when done is returned as True
-        print(bottleneck())
+        print(*bottleneck())
         performance_measurement.evaluate_episode()
     else:
         done = False
