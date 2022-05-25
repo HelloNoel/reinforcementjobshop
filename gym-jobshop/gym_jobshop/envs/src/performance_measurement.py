@@ -34,7 +34,7 @@ def get_cost_from_current_period():
     temp_late_cost = global_settings.temp_sum_of_late_orders_this_period * global_settings.cost_per_late_item
 
     # Measure total cost for this period
-    total_cost_this_period = temp_wip_cost + temp_overtime_cost + temp_fgi_cost + temp_late_cost - temp_revenue
+    total_cost_this_period = - temp_wip_cost - temp_overtime_cost - temp_fgi_cost - temp_late_cost + temp_revenue
 
     global_settings.temp_sum_of_late_orders_this_period = 0  # reset the count of late orders until the next period's end
 
